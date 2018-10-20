@@ -11,19 +11,20 @@ import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
     ImageView imageView;
+    static final int CAM_REQUEST = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         final Button btnCamera = (Button)findViewById(R.id.btnCamera);
-        ImageView imageView = (ImageView)findViewById(R.id.imageView);
+        imageView = (ImageView)findViewById(R.id.imageView);
 
         btnCamera.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Intent intent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent,0);
+                startActivityForResult(intent,CAM_REQUEST);
             }
         });
     }
@@ -31,8 +32,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Bitmap bitmap = (Bitmap)data.getExtras().get("data");
-        imageView.setImageBitmap(bitmap);
+        if(data != null && resultCode==RESULT_OK && requestCode == CAM_REQUEST) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(bitmap);
+        }
     }
 }
 
