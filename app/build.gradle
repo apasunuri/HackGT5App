@@ -30,4 +30,6 @@ dependencies {
     compile 'commons-io:commons-io:2.5'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     implementation 'com.google.code.gson:gson:2.8.2'
+    compile 'com.clarifai:clarifai-api-java:1.2.0'
+    compile 'com.clarifai.clarifai-api2:core:2.3.0'
 }

@@ -2,10 +2,12 @@ package com.example.abhin.hackgt5app;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Credentials;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +37,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import clarifai2.api.ClarifaiBuilder;
+import clarifai2.api.ClarifaiClient;
+import clarifai2.api.ClarifaiResponse;
+import clarifai2.dto.input.ClarifaiInput;
+import clarifai2.dto.model.output.ClarifaiOutput;
+import clarifai2.dto.prediction.Concept;
+
 import static com.google.api.client.json.jackson2.JacksonFactory.getDefaultInstance;
 
 //import com.google.api.client.json.gson.GsonFactory;
@@ -43,6 +52,8 @@ import static com.google.api.client.json.jackson2.JacksonFactory.getDefaultInsta
 
 public class MainActivity extends AppCompatActivity {
 
+
+    private final ClarifaiClient clarifaiClient = new ClarifaiBuilder(Credentials.CLARIFAI_API_KEY).buildSync();
 //    private static final String CLOUD_VISION_API_KEY = BuildConfig.API_KEY;
     public static final String FILE_NAME = "temp.jpg";
     private static final String ANDROID_CERT_HEADER = "X-Android-Cert";
@@ -81,10 +92,49 @@ public class MainActivity extends AppCompatActivity {
         if(data != null && resultCode==RESULT_OK && requestCode == CAM_REQUEST) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             imageView.setImageBitmap(bitmap);
+//            uploadImage(data.getData());
+            new AsyncTask<Bitmap, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
+                @Override
+                protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Bitmap... bitmaps) {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 90, stream);
+                    byte[] byteArray = stream.toByteArray();
+                    return clarifaiClient.getDefaultModels().generalModel().predict().withInputs(ClarifaiInput.forImage(byteArray)).executeSync();
+//                    return clarifaiClient.recognize(new RecognitionRequest(byteArray).setModel("general-v1.3")).get(0);
+                }
+
+                @Override
+                protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Concept>>> result) {
+                    boolean found = false;
+                    String foundText = "Trash :(";
+                    for (Concept tag : result.getOrNull().get(0).data()) {
+                        System.out.println(t
+                                tag.name());
+                        if (recyclables.contains(tag.name())) {
+                            foundText = "Recycle! :)";
+                            outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pukeGreen, null));
+                            found = true;
+                        } else if (compostables.contains(tag.name())) {
+                            foundText = "Compost! :)";
+                            outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.blue, null));
+                            found = true;
+                        } else if (landfill.contains(tag.name())) {
+                            foundText = "Trash! :(";
+                            outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.heartRed, null));
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        foundText = "Trash! :(";
+                        outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.heartRed, null));
+                    }
+                    outputTextView.setText(foundText);
+                }
+            }.execute(bitmap);
         }
-        else if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            uploadImage(data.getData());
-        }
+//        else if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+//            uploadImage(data.getData());
+//        }
 //        else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == RESULT_OK) {
 //            Uri photoUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider",
 //                    getCameraFile());
