@@ -15,12 +15,18 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="354dp"
-        android:layout_height="434dp"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
         android:layout_weight="10"
-        android:adjustViewBounds="false"
-        android:cropToPadding="false" />
-
+        android:layout_marginBottom="16dp"/>
+    <TextView
+        android:id="@+id/mImageDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="36dp"
+        android:layout_weight="1"
+        android:text="Type"
+        android:textColor="@android:color/black" />
 
     <Button
         android:id="@+id/btnCamera"
