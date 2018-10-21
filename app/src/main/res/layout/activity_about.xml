@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".About">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/app_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="9dp"></include>
+
+    <TextView
+        android:id="@+id/about_text"
+        android:layout_width="407dp"
+        android:layout_height="485dp"
+        android:layout_below="@+id/app_bar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="109dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:text="Created by Anh Hoang, Abinai Pasunuri, Jason Yao, and Leeta Geltser \n\n
+    At the start of this hackathon, we were told that at the end of every meal there would be a special bin to collect foodstuffs for composting.
+We were instructed to be very careful about what we threw into the bin, as any contaminates would ruin the composting job, resulting
+in simply more garbage.But the average person may not be aware of what items are compostable,
+what they should throw away, and what they should recycle. Thus, we have set out to develop an
+app which employs machine learning to help users classify rubbish so they an deposit it in the
+correct receptacle. We hope that our app will improve the efficiency of composting and recycling
+so that we throw away and pollute less. \n\n
+    Thank you to all of the mentors and volunteers at HackGT for making giving us this opportunity."
+        android:textSize="16sp"
+        tools:layout_editor_absoluteX="88dp"
+        tools:layout_editor_absoluteY="82dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="115dp"
+        android:layout_marginTop="115dp"
+        android:layout_marginEnd="115dp"
+        android:text="About the Recycle It! App"
+        android:textSize="16sp" />
+</RelativeLayout>
