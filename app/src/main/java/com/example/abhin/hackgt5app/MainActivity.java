@@ -1,7 +1,19 @@
 package com.example.abhin.hackgt5app;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.net.Credentials;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -50,9 +62,18 @@ import static com.google.api.client.json.jackson2.JacksonFactory.getDefaultInsta
 
 //import static com.google.api.client.json.gson.GsonFactory.*;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.util.NoSuchElementException;
+
 public class MainActivity extends AppCompatActivity {
+    ContentValues values;
+    Uri imageUri;
 
+    ImageView imageView;
+    float[] imageSize = new float[2]; //(width,height)
 
+    /*
     private final ClarifaiClient clarifaiClient = new ClarifaiBuilder(Credentials.CLARIFAI_API_KEY).buildSync();
 //    private static final String CLOUD_VISION_API_KEY = BuildConfig.API_KEY;
     public static final String FILE_NAME = "temp.jpg";
@@ -68,27 +89,61 @@ public class MainActivity extends AppCompatActivity {
     public static final int CAMERA_IMAGE_REQUEST = 3;
     ImageView imageView;
     TextView mImageDetails;
+    */
     static final int CAM_REQUEST = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button btnCamera = (Button)findViewById(R.id.btnCamera);
-        imageView = (ImageView)findViewById(R.id.imageView);
-         mImageDetails = (TextView)findViewById(R.id.mImageDetails);
-        btnCamera.setOnClickListener(new View.OnClickListener(){
+        final Button btnCamera = (Button) findViewById(R.id.btnCamera);
+        imageView = (ImageView) findViewById(R.id.imageView);
+
+        btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                Intent intent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent,CAM_REQUEST);
+            public void onClick(View view) {
+                values = new ContentValues();
+                // create a package provider string suggested by the error messge.
+                String provider = "com.android.providers.media.MediaProvider";
+
+
+                // grant all three uri permissions!
+                //grantUriPermission(provider, Uri.parse("content://media/external/images/media"), Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+
+                imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, CAM_REQUEST);
             }
         });
     }
-//fdajdklfj
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == CAM_REQUEST) {
+            Bitmap bitmap;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),imageUri);
+                imageView.setImageBitmap(bitmap);
+                //imageurl = getRealPathFromURI(imageURI);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+            //imageSize[0] = bitmap.getWidth();
+            //imageSize[1] = bitmap.getHeight();
+        }
+    }
+        /*
         if(data != null && resultCode==RESULT_OK && requestCode == CAM_REQUEST) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             imageView.setImageBitmap(bitmap);
@@ -131,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                     outputTextView.setText(foundText);
                 }
             }.execute(bitmap);
-        }
+        } */
 //        else if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
 //            uploadImage(data.getData());
 //        }
@@ -153,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 //            uploadImage(photoUri);
 //        }
 //    }
-
+    /*
     public void uploadImage(Uri uri) {
         if (uri != null) {
             try {
@@ -181,11 +236,12 @@ public class MainActivity extends AppCompatActivity {
         JsonFactory jsonFactory = getDefaultInstance();
 
         VisionRequestInitializer requestInitializer =
-                new VisionRequestInitializer(/*CLOUD_VISION_API_KEY */ "AIzaSyCLycmtn14lGB1PTUOc_oolZlt5GJY_nGk ") {
+                new VisionRequestInitializer( "AIzaSyCLycmtn14lGB1PTUOc_oolZlt5GJY_nGk ") { // CLOUD_VISION_API_KEY
                     /**
                      * We override this so we can inject important identifying fields into the HTTP
                      * headers. This enables use of a restricted cloud platform API key.
                      */
+    /*
                     @Override
                     protected void initializeVisionRequest(VisionRequest<?> visionRequest)
                             throws IOException {
@@ -325,8 +381,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return message.toString();
-    }
+    }*/
 
-}
-
-
+// }
