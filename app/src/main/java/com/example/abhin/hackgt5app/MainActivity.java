@@ -1,8 +1,10 @@
 package com.example.abhin.hackgt5app;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.clarifai.api.RecognitionRequest;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -50,6 +53,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -73,13 +77,14 @@ import java.util.NoSuchElementException;
 public class MainActivity extends AppCompatActivity {
     ContentValues values;
     Uri imageUri;
-
-    ImageView imageView;
+    private static HashSet<String> recyclables = new HashSet<String>();
+    private static HashSet<String> compostables = new HashSet<String>();
+    private static HashSet<String> technologys = new HashSet<String>();
+    private static HashSet<String> notApplicableSet = new HashSet<>();
     float[] imageSize = new float[2]; //(width,height)
 
-    /*
-    private final ClarifaiClient clarifaiClient = new ClarifaiBuilder(Credentials.CLARIFAI_API_KEY).buildSync();
-//    private static final String CLOUD_VISION_API_KEY = BuildConfig.API_KEY;
+    private final ClarifaiClient clarifaiClient = new ClarifaiBuilder(com.example.abhin.hackgt5app.Credentials.CLARIFAI_API_KEY).buildSync();
+    //   private static final String CLOUD_VISION_API_KEY = BuildConfig.API_KEY;
     public static final String FILE_NAME = "temp.jpg";
     private static final String ANDROID_CERT_HEADER = "X-Android-Cert";
     private static final String ANDROID_PACKAGE_HEADER = "X-Android-Package";
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int CAMERA_IMAGE_REQUEST = 3;
     ImageView imageView;
     TextView mImageDetails;
-    */
+
     static final int CAM_REQUEST = 1;
 
     @Override
@@ -105,6 +110,31 @@ public class MainActivity extends AppCompatActivity {
         final Button btnCamera = (Button) findViewById(R.id.btnCamera);
         imageView = (ImageView) findViewById(R.id.imageView);
 
+        if (checkSelfPermission(Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA},
+                    CAM_REQUEST);
+        }
+
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    2);
+        }
+
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    3);
+        }
+        if (checkSelfPermission(Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.INTERNET},
+                    4);
+        }
+
+        mImageDetails = (TextView) findViewById(R.id.textView);
+
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,19 +142,191 @@ public class MainActivity extends AppCompatActivity {
                 // create a package provider string suggested by the error messge.
                 String provider = "com.android.providers.media.MediaProvider";
 
-
                 // grant all three uri permissions!
                 //grantUriPermission(provider, Uri.parse("content://media/external/images/media"), Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-
-                imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
-
+                imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, CAM_REQUEST);
             }
         });
+
+        String[] recyclable = {"paper",
+                "newspaper",
+                "magazine",
+                "catalog",
+                "map",
+                "phonebook",
+                "mail",
+                "paperboard",
+                "tissue",
+                "box",
+                "card",
+                "folder",
+                "can",
+                "straw",
+                "carton",
+                "book",
+                "cup",
+                "envelope",
+                "cardboard",
+                "vase",
+                "plastic",
+                "boxboard",
+                "box",
+                "metal",
+                "tin",
+                "aluminum",
+                "dish",
+                "plate",
+                "tray",
+                "cookware",
+                "copper",
+                "jewelry",
+                "key",
+                "steel",
+                "pot",
+                "bucket",
+                "pan",
+                "tin",
+                "pyrex",
+                "utensil",
+                "glass",
+                "bottle",
+                "jar",
+                "cup",
+                "jug",
+                "metal",
+                "spoon",
+                "fork",
+                "office paper",
+                "blind",
+                "curtain", "recyclable"};
+        String[] technology = {"battery",
+                "computer",
+                "electronics",
+                "bulb",
+                "microfilm",
+                "cell phone",
+                "phone",
+                "mobile phone",
+                "equipment",
+                "inkjet",
+                "cartridge",
+                "inkjet cardridge",
+                "cd",
+                "disk",
+                "tire",
+                "ink cartridge",
+                "tv",
+                "power cord",
+                "personal computer",
+                "laptop",
+                "portable computer"};
+        String[] composting = {"fruit",
+                "vegetable",
+                "apple",
+                "pear",
+                "banana",
+                "cucumber",
+                "strawberry",
+                "apricots",
+                "avocado",
+                "blackberry",
+                "cherry",
+                "coconut",
+                "date",
+                "durian",
+                "dragonfruit",
+                "grape",
+                "grapefruit",
+                "kiwi",
+                "lime",
+                "lemon",
+                "lychee",
+                "mango",
+                "melon",
+                "nectarine",
+                "olive",
+                "orange",
+                "peach",
+                "pineapple",
+                "plum",
+                "pomegranate",
+                "pomelo",
+                "raspberries",
+                "watermelon",
+                "broccoflower",
+                "broccoli",
+                "cabbage",
+                "celery",
+                "corn",
+                "basil",
+                "rosemary",
+                "sage",
+                "thyme",
+                "kale",
+                "lettuce",
+                "mushroom",
+                "onion",
+                "pepper",
+                "ginger",
+                "wasabi",
+                "squash",
+                "tomato",
+                "potato",
+                "hair",
+                "wood",
+                "popcorn",
+                "leaves",
+                "egg",
+                "pasta",
+                "fish",
+                "beef",
+                "chicken",
+                "pork",
+                "meat",
+                "soy",
+                "pumpkin",
+                "nut",
+                "cheese",
+                "toothpicks",
+                "pickles",
+                "feather",
+                "fur",
+                "bone", "compostable"};
+        String[] notApplicable = {
+                "person",
+                "interior",
+                "urban design",
+                "family",
+                "human",
+                "ground",
+                "wall",
+                "door",
+                "desk",
+                "chair",
+                "window",
+                "pattern",
+                "texture",
+                "fabric",
+                "background"
+        };
+        for (int i = 0; i < composting.length; i++) {
+            compostables.add(composting[i]);
+        }
+        for (int i = 0; i < technology.length; i++) {
+            technologys.add(technology[i]);
+        }
+        for (int i = 0; i < recyclable.length; i++) {
+            recyclables.add(recyclable[i]);
+        }
+        for(int i = 0; i < notApplicable.length; i++) {
+            notApplicableSet.add(notApplicable[i]);
+        }
+
     }
 
     @Override
@@ -159,67 +361,114 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == RESULT_OK && requestCode == CAM_REQUEST) {
             Bitmap bitmap;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),imageUri);
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 imageView.setImageBitmap(bitmap);
                 //imageurl = getRealPathFromURI(imageURI);
+
+//            uploadImage(data.getData());
+                new AsyncTask<Bitmap, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
+                    @Override
+                    protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Bitmap... bitmaps) {
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 90, stream);
+                        byte[] byteArray = stream.toByteArray();
+                        return clarifaiClient.getDefaultModels().generalModel().predict().withInputs(ClarifaiInput.forImage(byteArray)).executeSync();
+//                    return clarifaiClient.(new RecognitionRequest(byteArray).setModel("general-v1.3")).get(0);
+                    }
+
+                    @Override
+                    protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Concept>>> result) {
+                        boolean found = false;
+                        String foundText = "Trash";
+
+                        for (Concept tag : result.getOrNull().get(0).data()) {
+                            System.out.println(
+                                    tag.name());
+                            //mImageDetails.setText(tag.name());
+                            if (recyclables.contains(tag.name())) {
+                                foundText = "Recyclable Item";
+//                            mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pukeGreen, null));
+                                found = true;
+                            } else if (compostables.contains(tag.name())) {
+                                foundText = "Compostable Item";
+//                            mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color.blue, null));
+                                found = true;
+                            } else if (technologys.contains(tag.name())) {
+                                foundText = "Technology";
+//                            mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color.heartRed, null));
+                                found = true;
+                            } else if (notApplicableSet.contains(tag.name())) {
+                                foundText = "Not Applicable";
+                            }
+                        }
+                        if (!found) {
+                            foundText = "Trash";
+//                        mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color., null));
+                        }
+                       mImageDetails.setText(foundText);
+
+                    }
+                }.execute(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
-
-
             //imageSize[0] = bitmap.getWidth();
             //imageSize[1] = bitmap.getHeight();
         }
-    }
-        /*
-        if(data != null && resultCode==RESULT_OK && requestCode == CAM_REQUEST) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(bitmap);
-//            uploadImage(data.getData());
-            new AsyncTask<Bitmap, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
-                @Override
-                protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Bitmap... bitmaps) {
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 90, stream);
-                    byte[] byteArray = stream.toByteArray();
-                    return clarifaiClient.getDefaultModels().generalModel().predict().withInputs(ClarifaiInput.forImage(byteArray)).executeSync();
-//                    return clarifaiClient.recognize(new RecognitionRequest(byteArray).setModel("general-v1.3")).get(0);
-                }
 
-                @Override
-                protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Concept>>> result) {
-                    boolean found = false;
-                    String foundText = "Trash :(";
-                    for (Concept tag : result.getOrNull().get(0).data()) {
-                        System.out.println(t
-                                tag.name());
-                        if (recyclables.contains(tag.name())) {
-                            foundText = "Recycle! :)";
-                            outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pukeGreen, null));
-                            found = true;
-                        } else if (compostables.contains(tag.name())) {
-                            foundText = "Compost! :)";
-                            outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.blue, null));
-                            found = true;
-                        } else if (landfill.contains(tag.name())) {
-                            foundText = "Trash! :(";
-                            outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.heartRed, null));
-                            found = true;
-                        }
-                    }
-                    if (!found) {
-                        foundText = "Trash! :(";
-                        outputTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.heartRed, null));
-                    }
-                    outputTextView.setText(foundText);
-                }
-            }.execute(bitmap);
-        } */
+
+//        if (data != null && resultCode == RESULT_OK && requestCode == CAM_REQUEST) {
+//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//            imageView.setImageBitmap(bitmap);
+////            uploadImage(data.getData());
+//            new AsyncTask<Bitmap, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
+//                @Override
+//                protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Bitmap... bitmaps) {
+//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                    bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 90, stream);
+//                    byte[] byteArray = stream.toByteArray();
+//                    return clarifaiClient.getDefaultModels().generalModel().predict().withInputs(ClarifaiInput.forImage(byteArray)).executeSync();
+////                    return clarifaiClient.(new RecognitionRequest(byteArray).setModel("general-v1.3")).get(0);
+//                }
+//
+//                @Override
+//                protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Concept>>> result) {
+//                    boolean found = false;
+//                    String foundText = "Trash :(";
+//                    HashSet<String> recyclables = new HashSet<String>();
+//                    HashSet<String> compostables = new HashSet<String>();
+//                    HashSet<String> technogy = new HashSet<String>();
+//                    for (Concept tag : result.getOrNull().get(0).data()) {
+//                        System.out.println(
+//                                tag.name());
+//                        if (recyclables.contains(tag.name())) {
+//                            foundText = "Recycle! :)";
+////                            mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pukeGreen, null));
+//                            found = true;
+//                        } else if (compostables.contains(tag.name())) {
+//                            foundText = "Compost! :)";
+////                            mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color.blue, null));
+//                            found = true;
+//                        } else if (technologys.contains(tag.name())) {
+//                            foundText = "Trash! :(";
+////                            mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color.heartRed, null));
+//                            found = true;
+//                        }
+//                    }
+//                    if (!found) {
+//                        foundText = "Trash! :(";
+////                        mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color., null));
+//                    }
+//                    mImageDetails.setText(foundText);
+//                }
+//            }.execute(bitmap);
+//        }
+
+
 //        else if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
 //            uploadImage(data.getData());
 //        }
@@ -229,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
 //            uploadImage(photoUri);
 //        }
     }
-
+}
 //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
