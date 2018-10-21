@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -96,12 +97,12 @@ public class MainActivity extends AppCompatActivity {
     TextView mImageDetails;
 
     static final int CAM_REQUEST = 1;
-
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        progressBar = findViewById(R.id.progressBar);
         final Button btnCamera = (Button) findViewById(R.id.btnCamera);
         imageView = (ImageView) findViewById(R.id.imageView);
 
@@ -340,11 +341,13 @@ public class MainActivity extends AppCompatActivity {
                 new AsyncTask<Bitmap, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
                     @Override
                     protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Bitmap... bitmaps) {
+                        progressBar.setVisibility(1);
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 90, stream);
                         byte[] byteArray = stream.toByteArray();
                         return clarifaiClient.getDefaultModels().generalModel().predict().withInputs(ClarifaiInput.forImage(byteArray)).executeSync();
 //                    return clarifaiClient.(new RecognitionRequest(byteArray).setModel("general-v1.3")).get(0);
+
                     }
 
                     @Override
@@ -355,7 +358,10 @@ public class MainActivity extends AppCompatActivity {
                         for (Concept tag : result.getOrNull().get(0).data()) {
                             System.out.println(
                                     tag.name());
-                            //mImageDetails.setText(tag.name());
+
+                            mImageDetails.setVisibility(1);
+                            mImageDetails.setText("Processing...");
+
                             if (recyclables.contains(tag.name())) {
                                 foundText = "Recyclable Item";
 //                            mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pukeGreen, null));
@@ -377,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
 //                        mImageDetails.setTextColor(ResourcesCompat.getColor(getResources(), R.color., null));
                         }
                        mImageDetails.setText(foundText);
+                        progressBar.setVisibility(imageView.INVISIBLE);
 
                     }
                 }.execute(bitmap);
