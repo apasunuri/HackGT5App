@@ -66,6 +66,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        tools:layout_editor_absoluteX="168dp"
-        tools:layout_editor_absoluteY="363dp" />
+        tools:layout_editor_absoluteX="250dp"
+        tools:layout_editor_absoluteY="350dp" />
 </android.support.constraint.ConstraintLayout>

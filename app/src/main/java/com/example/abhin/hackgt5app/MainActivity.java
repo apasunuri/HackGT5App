@@ -108,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         progressBar = findViewById(R.id.progressBar);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
 
         final Button btnCamera = (Button) findViewById(R.id.btnCamera);
         imageView = (ImageView) findViewById(R.id.imageView);
@@ -377,6 +377,7 @@ public class MainActivity extends AppCompatActivity {
                 new AsyncTask<Bitmap, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
                     @Override
                     protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Bitmap... bitmaps) {
+                        mImageDetails.setVisibility(imageView.INVISIBLE);
                         progressBar.setVisibility(1);
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 90, stream);
