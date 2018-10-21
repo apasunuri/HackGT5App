@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Concept>>> result) {
                     boolean found = false;
                     String foundText = "Trash :(";
-                    for (Concept tag : result.getOrNull().get(0).data()) {
+                    for (Concept tag : redsf;sult.getOrNull().get(0).data()) {
                         System.out.println(t
                                 tag.name());
                         if (recyclables.contains(tag.name())) {
