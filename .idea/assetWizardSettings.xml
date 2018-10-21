@@ -18,7 +18,9 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="foregroundImage" value="C:\Users\Leeta\Documents\plasticsrecyclingcropped.png" />
+                                      <entry key="backgroundLayerName" value="ic_launcher_background" />
+                                      <entry key="foregroundImage" value="C:\Users\Leeta\Documents\plasticsrecyclingcroppeda.png" />
+                                      <entry key="outputName" value="recyclingstats" />
                                     </map>
                                   </option>
                                 </PersistentState>
