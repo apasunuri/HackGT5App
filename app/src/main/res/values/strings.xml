@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HackGT5 App</string>
+    <string name="title_activity_tester">tester</string>
 </resources>
