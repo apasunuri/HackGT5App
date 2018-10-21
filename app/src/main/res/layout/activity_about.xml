@@ -38,7 +38,7 @@ app which employs machine learning to help users classify rubbish so they an dep
 correct receptacle. We hope that our app will improve the efficiency of composting and recycling
 so that we throw away and pollute less. \n\n
     Thank you to all of the mentors and volunteers at HackGT for making giving us this opportunity."
-        android:textSize="16sp"
+        android:textSize="14sp"
         tools:layout_editor_absoluteX="88dp"
         tools:layout_editor_absoluteY="82dp" />
 
@@ -49,9 +49,9 @@ so that we throw away and pollute less. \n\n
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="115dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="115dp"
-        android:layout_marginEnd="115dp"
+        android:layout_marginEnd="10dp"
         android:text="About the Recycle It! App"
         android:textSize="16sp" />
 </RelativeLayout>
